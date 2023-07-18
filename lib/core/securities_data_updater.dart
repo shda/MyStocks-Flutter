@@ -55,6 +55,7 @@ class SecuritiesDataUpdater{
     }
 
     var listPriceSecurities = await _intermediary.requestLastPrice(_securitiesUpdateNames);
+    _securitiesPriceDict.clear();
     listPriceSecurities.forEach((key, value) {
       _securitiesPriceDict[key] = value;
     });

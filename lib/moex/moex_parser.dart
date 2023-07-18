@@ -15,8 +15,17 @@ class MoexParser {
     for(int i=0; i < list.length ; i++){
       List<dynamic> items = list[i];
 
-      var price = items[MarketdataColumnsEnum.LAST.index];
-      price ??= items[MarketdataColumnsEnum.MARKETPRICE.index];
+      dynamic value = items[MarketdataColumnsEnum.LAST.index];
+      value ??= items[MarketdataColumnsEnum.MARKETPRICE.index];
+
+      double price = 0;
+
+      if(value != null){
+        double? val = double.tryParse(value.toString());
+        if(val != null){
+          price = val;
+        }
+      }
 
       var info = MoexSecurityMetadataInfo(
         secId: items[MarketdataColumnsEnum.SECID.index],

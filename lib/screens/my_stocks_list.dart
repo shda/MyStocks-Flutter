@@ -16,7 +16,7 @@ class _MyStocksList extends State<MyStocksListPage> implements ISecuritiesUpdate
   }
 
   void startTimer() {
-    const oneSec = Duration(seconds: 1);
+    const oneSec = Duration(seconds: 3);
     _timer = Timer.periodic(oneSec, (timer) {
       _securitiesDataUpdater.requestSecurities();
     });
@@ -43,15 +43,16 @@ class _MyStocksList extends State<MyStocksListPage> implements ISecuritiesUpdate
   {
     String secName = "Null";
     String price = "";
+    String timeUpdate = "";
 
     var secPrice = _securitiesDataUpdater.getPrice(index);
     if(secPrice != null){
       secName = secPrice.tickerSymbol!;
+      timeUpdate = secPrice.time!;
       if(secPrice.currentPrice != null){
         var val = secPrice.currentPrice;
         price = "$val";
       }
-
     }
 
     return Container(
@@ -59,13 +60,20 @@ class _MyStocksList extends State<MyStocksListPage> implements ISecuritiesUpdate
       color: Colors.amber[600],
       child: Row(
         children: [
-          const Icon(Icons.co2),
+          const SizedBox(width: 10),
+          const CircleAvatar(child: Text('Text')),
+          const SizedBox(width: 10),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(secName),
               Text(price)
             ],
           ),
+          const Spacer(),
+          Text(timeUpdate),
+          const SizedBox(width: 10),
         ],
       ),
     );
@@ -78,12 +86,13 @@ class _MyStocksList extends State<MyStocksListPage> implements ISecuritiesUpdate
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: ListView.builder(
+      body: ListView.separated(
         padding: const EdgeInsets.all(8),
         itemCount: _securitiesDataUpdater.countSecurities(),
         itemBuilder: (context, index) {
           return _buildListItem(index);
         },
+        separatorBuilder: (BuildContext context, int index) => const Divider(height: 4),
       ),
     );
   }
