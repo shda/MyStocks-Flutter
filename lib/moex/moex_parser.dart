@@ -11,11 +11,16 @@ class MoexParser {
     Map<String, MoexSecurityMetadataInfo> map = <String, MoexSecurityMetadataInfo>{};
 
     List<dynamic> list = table;
+
     for(int i=0; i < list.length ; i++){
       List<dynamic> items = list[i];
+
+      var price = items[MarketdataColumnsEnum.LAST.index];
+      price ??= items[MarketdataColumnsEnum.MARKETPRICE.index];
+
       var info = MoexSecurityMetadataInfo(
         secId: items[MarketdataColumnsEnum.SECID.index],
-        last: items[MarketdataColumnsEnum.LAST.index],
+        last: price,
         sysTime: items[MarketdataColumnsEnum.TIME.index],
       );
 

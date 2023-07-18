@@ -1,5 +1,4 @@
-enum MarketdataColumnsEnum
-{
+enum MarketdataColumnsEnum {
   SECID,
   BOARDID,
   BID,
