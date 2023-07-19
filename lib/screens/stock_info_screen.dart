@@ -4,11 +4,27 @@ import 'package:mystocks/core/services.dart';
 import 'package:mystocks/data/securities_price_info.dart';
 import 'package:mystocks/screens/stock_count_edit_screen.dart';
 
-class StockInfoScreen extends StatelessWidget {
-  final SecuritiesPriceInfo _secPrice;
-  final Services _services;
+class StockInfoScreen extends StatefulWidget {
+  final Services services;
+  final SecuritiesPriceInfo secPrice;
 
-  const StockInfoScreen(this._services, this._secPrice, {super.key});
+  const StockInfoScreen(
+      {super.key,
+      required this.title,
+      required this.services,
+      required this.secPrice});
+
+  final String title;
+
+  @override
+  State<StockInfoScreen> createState() => _StockInfoScreen();
+}
+
+class _StockInfoScreen extends State<StockInfoScreen> {
+  // final SecuritiesPriceInfo _secPrice;
+  //final Services _services;
+
+  // const StockInfoScreen(this._services, this._secPrice, {super.key});
 
   Widget? _buildList(BuildContext context, PurchasedSecuritiesList? list) {
     if (list == null) {
@@ -34,11 +50,10 @@ class StockInfoScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) {
           item ??= list.createItem();
-          return StockCountEditScreen(_services, _secPrice, item!);
+          return StockCountEditScreen(widget.services, widget.secPrice, item!);
         },
       ),
-    ).then((value) => {
-    });
+    ).then((value) => {setState(() {})});
   }
 
   Widget _buildStockItem(
@@ -46,30 +61,41 @@ class StockInfoScreen extends StatelessWidget {
     var listPrices = list.getList();
     PurchasedSecurityItem item = listPrices[index];
 
-    return GestureDetector(
-      onTap: () => {_onTapToItem(context, list, item)},
-      child: SizedBox(
-        height: 50,
-        child: Row(
-          children: [
-            const SizedBox(width: 10),
-            const CircleAvatar(child: Text('Text')),
-            const SizedBox(width: 10),
-            Text(item.countStock.toString()),
-            const SizedBox(width: 10),
-            Text(item.buyPriceByOne.toString()),
-            const SizedBox(width: 10),
-            Text(item.sum.toString()),
-          ],
+    return Dismissible(
+        key: ObjectKey(index),
+        background: Container(
+          color: Colors.green,
         ),
-      ),
-    );
+        onDismissed: (DismissDirection direction) {
+          setState(() {
+            listPrices.removeAt(index);
+            //items.removeAt(index);
+          });
+        },
+        child: GestureDetector(
+          onTap: () => {_onTapToItem(context, list, item)},
+          child: SizedBox(
+            height: 50,
+            child: Row(
+              children: [
+                const SizedBox(width: 10),
+                const CircleAvatar(child: Text('Text')),
+                const SizedBox(width: 10),
+                Text(item.countStock.toString()),
+                const SizedBox(width: 10),
+                Text(item.buyPriceByOne.toString()),
+                const SizedBox(width: 10),
+                Text(item.sum.toString()),
+              ],
+            ),
+          ),
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
-    var psCollection = _services.purchasedSecuritiesCollection;
-    var list = psCollection.getListSecurities(_secPrice.tickerSymbol);
+    var psCollection = widget.services.purchasedSecuritiesCollection;
+    var list = psCollection.getListSecurities(widget.secPrice.tickerSymbol);
 
     return Scaffold(
       appBar: AppBar(
@@ -86,5 +112,20 @@ class StockInfoScreen extends StatelessWidget {
       ),
       body: _buildList(context, list),
     );
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void activate() {
+    super.activate();
   }
 }

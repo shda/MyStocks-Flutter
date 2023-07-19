@@ -9,9 +9,9 @@ class StocksListScreen extends State<MyStocksListPage>
     implements ISecuritiesUpdate {
   late Timer _timer;
   late SecuritiesDataUpdater _securitiesDataUpdater;
-  final Services _services;
+ // final Services _services;
 
-  StocksListScreen(this._services) {
+  StocksListScreen() {
     _securitiesDataUpdater = SecuritiesDataUpdater();
     _securitiesDataUpdater.setPriceListener(this);
     _securitiesDataUpdater.setSecuritiesNames({"AFLT", "SBER"});
@@ -38,14 +38,16 @@ class StocksListScreen extends State<MyStocksListPage>
   @override
   void onUpdateSecuritiesPrice() {
     setState(
-      () {},
+      () {
+
+      },
     );
   }
 
   void _onTapItem(int index, SecuritiesPriceInfo secPrice) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => StockInfoScreen(_services , secPrice),
+        builder: (context) => StockInfoScreen(secPrice: secPrice, title: "Hello" , services: widget.services),
       ),
     );
   }
@@ -117,5 +119,5 @@ class MyStocksListPage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyStocksListPage> createState() => StocksListScreen(services);
+  State<MyStocksListPage> createState() => StocksListScreen();
 }

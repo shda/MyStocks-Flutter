@@ -26,39 +26,43 @@ class StockCountEditScreen extends StatelessWidget {
     }
   }
 
+  Widget _makeItem(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Количество акций',
+            ),
+            initialValue: _editItem.countStock.toString(),
+            onChanged: onChangeTextCount,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Цена за акцию',
+            ),
+            initialValue: _editItem.buyPriceByOne.toString(),
+            onChanged: onChangeTextPrice,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_editItem.tickerSymbol),
+        //title: Text(_editItem.tickerSymbol),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-            Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Количество акций',
-              ),
-              initialValue: _editItem.countStock.toString(),
-              onChanged: onChangeTextCount,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Цена за акцию',
-              ),
-              initialValue: _editItem.buyPriceByOne.toString(),
-              onChanged: onChangeTextPrice,
-            ),
-          ),
-        ],
-      ),
+      body: _makeItem()
     );
   }
 }
