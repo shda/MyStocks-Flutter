@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
-import 'screens/my_stocks_list.dart';
+import 'core/purchased_securities_collection.dart';
+import 'core/services.dart';
+import 'screens/my_stocks_list_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+
+  var services = Services(
+      PurchasedSecuritiesCollection());
+
+  runApp(MyApp(services));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Services _services;
+  const MyApp(this._services, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Test',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-       // useMaterial3: true,
-      ),
-      home: const MyStocksListPage(title: 'My Stocks'),
+      darkTheme: ThemeData.dark(),
+      home: MyStocksListPage(title: 'My Stocks' , services: _services),
     );
   }
 }

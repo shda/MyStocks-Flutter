@@ -56,8 +56,7 @@ enum MarketdataColumnsEnum {
   TRADINGSESSION
 }
 
-enum SecuritiesFieldEnum
-{
+enum SecuritiesFieldEnum {
   SECID,
   BOARDID,
   SHORTNAME,

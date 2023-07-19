@@ -1,8 +1,7 @@
-class SecuritiesInfo
-{
-  final String TickerSymbol;
-  final String ShortName;
-  final String FullName;
+class SecuritiesInfo {
+  final String tickerSymbol;
+  final String shortName;
+  final String fullName;
 
-  SecuritiesInfo(this.TickerSymbol, this.ShortName, this.FullName);
+  SecuritiesInfo(this.tickerSymbol, this.shortName, this.fullName);
 }

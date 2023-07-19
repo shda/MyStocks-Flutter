@@ -1,5 +1,4 @@
-enum SecuritiesFieldEnum
-{
+enum SecuritiesFieldEnum {
   SECID,
   BOARDID,
   SHORTNAME,

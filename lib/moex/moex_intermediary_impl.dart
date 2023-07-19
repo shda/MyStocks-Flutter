@@ -5,7 +5,6 @@ import 'moex_parser.dart';
 
 import 'package:http/http.dart' as http;
 
-
 class MoexIntermediaryImpl extends IIntermediary {
   @override
   Future<Map<String, SecuritiesPriceInfo>> requestLastPrice(

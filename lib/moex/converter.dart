@@ -1,8 +1,7 @@
 import '../data/securities_price_info.dart';
 import 'moex_security_metadata_info.dart';
 
-class Converter
-{
+class Converter {
   static Map<String, SecuritiesPriceInfo> convert(Map<String, MoexSecurityMetadataInfo> dict) {
 
     Map<String, SecuritiesPriceInfo> result = {};

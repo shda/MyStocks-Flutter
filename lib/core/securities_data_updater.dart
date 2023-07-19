@@ -4,14 +4,14 @@ import '../data/securities_price_info.dart';
 import '../moex/moex_intermediary_impl.dart';
 import 'intermediary.dart';
 
-class SecuritiesDataUpdater{
+class SecuritiesDataUpdater {
   late ISecuritiesUpdate? _securitiesUpdate;
   late Intermediary _intermediary;
   late HashSet<String> _securitiesUpdateNames;
   late Map<String, SecuritiesPriceInfo> _securitiesPriceDict;
   late bool _isRequestInProcess;
 
-  SecuritiesDataUpdater(){
+  SecuritiesDataUpdater() {
     _intermediary = Intermediary(MoexIntermediaryImpl());
     _securitiesUpdateNames = HashSet<String>.identity();
     _securitiesPriceDict = Map<String, SecuritiesPriceInfo>.identity();
@@ -21,8 +21,9 @@ class SecuritiesDataUpdater{
   int countSecurities() => _securitiesUpdateNames.length;
 
   SecuritiesPriceInfo? getPrice(int index) {
-    List<SecuritiesPriceInfo> sen = List<SecuritiesPriceInfo>.from(_securitiesPriceDict.values);
-    if(sen.length <= index) {
+    List<SecuritiesPriceInfo> sen =
+        List<SecuritiesPriceInfo>.from(_securitiesPriceDict.values);
+    if (sen.length <= index) {
       return null;
     }
     return sen[index];
@@ -33,7 +34,7 @@ class SecuritiesDataUpdater{
   }
 
   void requestSecurities() {
-    if(_isRequestInProcess){
+    if (_isRequestInProcess) {
       return;
     }
 
@@ -46,7 +47,7 @@ class SecuritiesDataUpdater{
     }
   }
 
-  void _requestSecuritiesAsync() async{
+  void _requestSecuritiesAsync() async {
     _isRequestInProcess = true;
 
     if (_securitiesUpdateNames.isEmpty) {
@@ -54,7 +55,8 @@ class SecuritiesDataUpdater{
       return;
     }
 
-    var listPriceSecurities = await _intermediary.requestLastPrice(_securitiesUpdateNames);
+    var listPriceSecurities =
+        await _intermediary.requestLastPrice(_securitiesUpdateNames);
     _securitiesPriceDict.clear();
     listPriceSecurities.forEach((key, value) {
       _securitiesPriceDict[key] = value;
@@ -69,4 +71,3 @@ class SecuritiesDataUpdater{
 abstract class ISecuritiesUpdate {
   void onUpdateSecuritiesPrice();
 }
-

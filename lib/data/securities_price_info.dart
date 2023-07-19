@@ -1,5 +1,4 @@
-class SecuritiesPriceInfo
-{
+class SecuritiesPriceInfo {
   final String? tickerSymbol;
   final double? currentPrice;
   final String? time;
