@@ -17,27 +17,47 @@ class PurchasedSecuritiesCollection extends IPurchasedSecuritiesCollection {
   void load() async {}
 
   void save() async {}
+
+  @override
+  PurchasedSecuritiesList? getListSecurities(String? tickerSymbol) {
+    PurchasedSecuritiesList? list;
+
+    if (tickerSymbol != null) {
+      list = mapItems[tickerSymbol];
+
+      if (list == null) {
+        list = PurchasedSecuritiesList(tickerSymbol);
+        mapItems[list.tickerSymbol] = list;
+      }
+    }
+
+    return list;
+  }
 }
 
 class PurchasedSecurityItem {
   final String tickerSymbol;
-  final int id;
-  final int countStock;
-  final double buyPriceByOne;
+  late int countStock = 0;
+  late double buyPriceByOne = 0;
 
   double get sum => buyPriceByOne * countStock;
 
-  PurchasedSecurityItem(
-      this.id, this.countStock, this.buyPriceByOne, this.tickerSymbol);
+  PurchasedSecurityItem(this.tickerSymbol);
 }
 
 class PurchasedSecuritiesList {
   final String tickerSymbol;
   late List<PurchasedSecurityItem> _listByItems;
 
+  PurchasedSecurityItem createItem() {
+    var item = PurchasedSecurityItem(tickerSymbol);
+    _listByItems.add(item);
+    return item;
+  }
+
   List<PurchasedSecurityItem> getList() => _listByItems;
 
   PurchasedSecuritiesList(this.tickerSymbol) {
-    _listByItems = List<PurchasedSecurityItem>.empty();
+    _listByItems = [];
   }
 }

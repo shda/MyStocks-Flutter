@@ -51,9 +51,9 @@ class StocksListScreen extends State<MyStocksListPage>
   }
 
   Widget _buildListItem(int index) {
-    String secName = "Null";
-    String price = "";
-    String timeUpdate = "";
+    String secName = "None";
+    String price = "---";
+    String timeUpdate = "---";
 
     var secPrice = _securitiesDataUpdater.getPrice(index);
     if (secPrice != null) {
