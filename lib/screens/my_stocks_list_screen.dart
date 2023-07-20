@@ -4,15 +4,18 @@ import 'package:mystocks/core/securities_data_updater.dart';
 import 'package:mystocks/core/services.dart';
 import 'package:mystocks/data/securities_price_info.dart';
 import 'package:mystocks/screens/stock_info_screen.dart';
+import 'package:sprintf/sprintf.dart';
 
 class StocksListScreen extends State<MyStocksListPage>
     implements ISecuritiesUpdate {
   late Timer _timer;
   late SecuritiesDataUpdater _securitiesDataUpdater;
- // final Services _services;
 
-  StocksListScreen() {
-    _securitiesDataUpdater = SecuritiesDataUpdater();
+  @override
+  void initState() {
+    super.initState();
+
+    _securitiesDataUpdater = SecuritiesDataUpdater(widget.services.intermediary);
     _securitiesDataUpdater.setPriceListener(this);
     _securitiesDataUpdater.setSecuritiesNames({"AFLT", "SBER"});
     startTimer();
@@ -62,8 +65,7 @@ class StocksListScreen extends State<MyStocksListPage>
       secName = secPrice.tickerSymbol!;
       timeUpdate = secPrice.time!;
       if (secPrice.currentPrice != null) {
-        var val = secPrice.currentPrice;
-        price = "$val";
+        price = sprintf('%.2f', [secPrice.currentPrice]);
       }
     }
 

@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:mystocks/core/interface_purchased.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class PurchasedSecuritiesCollection extends IPurchasedSecuritiesCollection {
   Map<String, PurchasedSecuritiesList> mapItems = {};
@@ -8,18 +12,59 @@ class PurchasedSecuritiesCollection extends IPurchasedSecuritiesCollection {
     mapItems[data.tickerSymbol] = data;
   }
 
+  PurchasedSecuritiesCollection();
+
   void removeItem(int id) {
     mapItems.remove(id);
   }
 
-  PurchasedSecuritiesCollection();
+  PurchasedSecuritiesCollection.fromJson(Map<String, dynamic> json)
+      : mapItems = json['mapItems'];
 
-  void load() async {}
+  Map<String, dynamic> toJson() => {'mapItems': mapItems};
 
-  void save() async {}
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/counter.txt');
+  }
 
   @override
-  PurchasedSecuritiesList? getListSecurities(String? tickerSymbol) {
+  Future load() async {
+    try {
+      final file = await _localFile;
+      final contents = await file.readAsString();
+      final json = jsonDecode(contents);
+
+      Map<String, dynamic> map = json['mapItems'];
+      map.forEach((key, value) {
+        var items = value['listByItems'] as List;
+        for (var element in items) {
+          var el = PurchasedSecurityItem.fromJson(element);
+          var listSec = getListSecurities(el.tickerSymbol);
+          var list = listSec.getList();
+          list.add(el);
+        }
+      });
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
+  }
+
+  @override
+  Future save() async {
+    final file = await _localFile;
+    final json = jsonEncode(toJson());
+    file.writeAsString(json);
+  }
+
+  @override
+  PurchasedSecuritiesList getListSecurities(String? tickerSymbol) {
     PurchasedSecuritiesList? list;
 
     if (tickerSymbol != null) {
@@ -31,18 +76,8 @@ class PurchasedSecuritiesCollection extends IPurchasedSecuritiesCollection {
       }
     }
 
-    return list;
+    return list!;
   }
-}
-
-class PurchasedSecurityItem {
-  final String tickerSymbol;
-  late int countStock = 0;
-  late double buyPriceByOne = 0;
-
-  double get sum => buyPriceByOne * countStock;
-
-  PurchasedSecurityItem(this.tickerSymbol);
 }
 
 class PurchasedSecuritiesList {
@@ -60,4 +95,34 @@ class PurchasedSecuritiesList {
   PurchasedSecuritiesList(this.tickerSymbol) {
     _listByItems = [];
   }
+
+  PurchasedSecuritiesList.fromJson(Map<String, dynamic> json)
+      : tickerSymbol = json['tickerSymbol'],
+        _listByItems = json['listByItems'];
+
+  Map<String, dynamic> toJson() => {
+        'tickerSymbol': tickerSymbol,
+        'listByItems': _listByItems,
+      };
+}
+
+class PurchasedSecurityItem {
+  final String tickerSymbol;
+  late int countStock = 0;
+  late double buyPriceByOne = 0;
+
+  double get sum => buyPriceByOne * countStock;
+
+  PurchasedSecurityItem(this.tickerSymbol);
+
+  PurchasedSecurityItem.fromJson(Map<String, dynamic> json)
+      : tickerSymbol = json['tickerSymbol'],
+        countStock = json['countStock'],
+        buyPriceByOne = json['buyPriceByOne'];
+
+  Map<String, dynamic> toJson() => {
+        'tickerSymbol': tickerSymbol,
+        'countStock': countStock,
+        'buyPriceByOne': buyPriceByOne
+      };
 }

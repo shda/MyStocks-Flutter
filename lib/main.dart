@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:mystocks/debug/debug_dummy_intermediary.dart';
 import 'core/purchased_securities_collection.dart';
 import 'core/services.dart';
+import 'data/interface_intermediary.dart';
 import 'screens/my_stocks_list_screen.dart';
 
-void main() {
+void main() async{
+  runApp(MyApp(await _createServices()));
+}
 
-  var services = Services(
-      PurchasedSecuritiesCollection());
+Future<Services>  _createServices() async{
+  var purchasedSecuritiesCollection = PurchasedSecuritiesCollection();
+  await purchasedSecuritiesCollection.load();
+  var intermediary = _createIntermediary();
 
-  runApp(MyApp(services));
+  var services = Services(purchasedSecuritiesCollection , intermediary);
+
+  return services;
+}
+
+IIntermediary _createIntermediary(){
+  //return MoexIntermediaryImpl();
+  return DummyIntermediary();
 }
 
 class MyApp extends StatelessWidget {

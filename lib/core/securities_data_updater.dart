@@ -1,7 +1,7 @@
 import 'dart:collection';
+import 'package:mystocks/data/interface_intermediary.dart';
+import 'package:mystocks/data/securities_price_info.dart';
 
-import '../data/securities_price_info.dart';
-import '../moex/moex_intermediary_impl.dart';
 import 'intermediary.dart';
 
 class SecuritiesDataUpdater {
@@ -11,8 +11,8 @@ class SecuritiesDataUpdater {
   late Map<String, SecuritiesPriceInfo> _securitiesPriceDict;
   late bool _isRequestInProcess;
 
-  SecuritiesDataUpdater() {
-    _intermediary = Intermediary(MoexIntermediaryImpl());
+  SecuritiesDataUpdater(IIntermediary intermediary) {
+    _intermediary = Intermediary(intermediary);
     _securitiesUpdateNames = HashSet<String>.identity();
     _securitiesPriceDict = Map<String, SecuritiesPriceInfo>.identity();
     _isRequestInProcess = false;

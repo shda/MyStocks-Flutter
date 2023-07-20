@@ -21,11 +21,6 @@ class StockInfoScreen extends StatefulWidget {
 }
 
 class _StockInfoScreen extends State<StockInfoScreen> {
-  // final SecuritiesPriceInfo _secPrice;
-  //final Services _services;
-
-  // const StockInfoScreen(this._services, this._secPrice, {super.key});
-
   Widget? _buildList(BuildContext context, PurchasedSecuritiesList? list) {
     if (list == null) {
       return null;
@@ -53,7 +48,16 @@ class _StockInfoScreen extends State<StockInfoScreen> {
           return StockCountEditScreen(widget.services, widget.secPrice, item!);
         },
       ),
-    ).then((value) => {setState(() {})});
+    ).then((value) {
+      setState(() {
+
+      });
+      _savePurchasedSecuritiesCollection();
+    },);
+  }
+
+  void _savePurchasedSecuritiesCollection(){
+    widget.services.purchasedSecuritiesCollection.save();
   }
 
   Widget _buildStockItem(
@@ -69,7 +73,7 @@ class _StockInfoScreen extends State<StockInfoScreen> {
         onDismissed: (DismissDirection direction) {
           setState(() {
             listPrices.removeAt(index);
-            //items.removeAt(index);
+            _savePurchasedSecuritiesCollection();
           });
         },
         child: GestureDetector(
