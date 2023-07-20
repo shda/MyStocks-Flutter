@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mystocks/core/purchased_securities_collection.dart';
 import 'package:mystocks/core/services.dart';
 import 'package:mystocks/data/securities_price_info.dart';
-import 'package:mystocks/screens/stock_count_edit_screen.dart';
+import 'package:mystocks/screens/edit_buying_stocks_screen.dart';
+import 'package:sprintf/sprintf.dart';
 
 class StockInfoScreen extends StatefulWidget {
   final Services services;
@@ -45,7 +46,7 @@ class _StockInfoScreen extends State<StockInfoScreen> {
       MaterialPageRoute(
         builder: (context) {
           item ??= list.createItem();
-          return StockCountEditScreen(widget.services, widget.secPrice, item!);
+          return EditBuyingStockScreen(item!);
         },
       ),
     ).then((value) {
@@ -85,11 +86,16 @@ class _StockInfoScreen extends State<StockInfoScreen> {
                 const SizedBox(width: 10),
                 const CircleAvatar(child: Text('Text')),
                 const SizedBox(width: 10),
-                Text(item.countStock.toString()),
-                const SizedBox(width: 10),
-                Text(item.buyPriceByOne.toString()),
-                const SizedBox(width: 10),
-                Text(item.sum.toString()),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${item.countStock} шт.'),
+                    Text('${item.buyPriceByOne} р'),
+                  ],
+                ),
+                const SizedBox(width: 30),
+                Text(sprintf("%.2f р", [item.sum])),
               ],
             ),
           ),

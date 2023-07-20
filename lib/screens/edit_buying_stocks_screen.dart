@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mystocks/core/purchased_securities_collection.dart';
-import 'package:mystocks/core/services.dart';
-import 'package:mystocks/data/securities_price_info.dart';
 
-class StockCountEditScreen extends StatelessWidget {
-  final Services _services;
-  final SecuritiesPriceInfo _selectSecuritiesPrice;
+class EditBuyingStockScreen extends StatelessWidget {
   final PurchasedSecurityItem _editItem;
 
-  const StockCountEditScreen(this._services, this._selectSecuritiesPrice,
-      this._editItem,
-      {super.key});
+  const EditBuyingStockScreen(this._editItem, {super.key});
 
   void onChangeTextCount(String text){
     int? countStock =int.tryParse(text);
@@ -26,7 +20,7 @@ class StockCountEditScreen extends StatelessWidget {
     }
   }
 
-  Widget _makeItem(){
+  Widget _makeWidget(){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,9 +54,8 @@ class StockCountEditScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: Text(_editItem.tickerSymbol),
       ),
-      body: _makeItem()
+      body: _makeWidget()
     );
   }
 }

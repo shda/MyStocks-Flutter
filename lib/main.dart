@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mystocks/debug/debug_dummy_intermediary.dart';
+import 'package:mystocks/moex/moex_intermediary_impl.dart';
 import 'core/purchased_securities_collection.dart';
 import 'core/services.dart';
 import 'data/interface_intermediary.dart';
@@ -20,7 +21,7 @@ Future<Services>  _createServices() async{
 }
 
 IIntermediary _createIntermediary(){
-  //return MoexIntermediaryImpl();
+  return MoexIntermediaryImpl();
   return DummyIntermediary();
 }
 

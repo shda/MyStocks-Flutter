@@ -15,13 +15,15 @@ class StocksListScreen extends State<MyStocksListPage>
   void initState() {
     super.initState();
 
-    _securitiesDataUpdater = SecuritiesDataUpdater(widget.services.intermediary);
+    _securitiesDataUpdater =
+        SecuritiesDataUpdater(widget.services.intermediary);
     _securitiesDataUpdater.setPriceListener(this);
     _securitiesDataUpdater.setSecuritiesNames({"AFLT", "SBER"});
     startTimer();
   }
 
   void startTimer() {
+    _securitiesDataUpdater.requestSecurities();
     const oneSec = Duration(seconds: 3);
     _timer = Timer.periodic(oneSec, (timer) {
       _securitiesDataUpdater.requestSecurities();
@@ -41,16 +43,15 @@ class StocksListScreen extends State<MyStocksListPage>
   @override
   void onUpdateSecuritiesPrice() {
     setState(
-      () {
-
-      },
+      () {},
     );
   }
 
   void _onTapItem(int index, SecuritiesPriceInfo secPrice) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => StockInfoScreen(secPrice: secPrice, title: "Hello" , services: widget.services),
+        builder: (context) => StockInfoScreen(
+            secPrice: secPrice, title: "Hello", services: widget.services),
       ),
     );
   }
@@ -60,21 +61,58 @@ class StocksListScreen extends State<MyStocksListPage>
     String price = "---";
     String timeUpdate = "---";
 
+    String currentPriceMy = "---";
+    String priceIfBy = "---";
+
+    String priceDifferenceString = "---";
+    String percentDifferenceString = "---";
+
+    bool isGrowthUp = false;
+
     var secPrice = _securitiesDataUpdater.getPrice(index);
     if (secPrice != null) {
+      double currentPriceSec = secPrice.currentPrice!;
+      int countAllBuyingSec = 0;
+      double myAllPriceSec = 0;
+      double canAllPriceSec = 0;
+
+      double priceDifference = 0;
+      double percentDifference = 0;
+
+      var listCollection = widget.services.purchasedSecuritiesCollection;
+      var listSec = listCollection.getListSecurities(secPrice.tickerSymbol);
+
+      if (listSec != null) {
+        countAllBuyingSec = listSec.getCountAllSecurities();
+        myAllPriceSec = listSec.getAllPrice();
+        canAllPriceSec = secPrice.currentPrice! * countAllBuyingSec;
+
+        priceDifference = canAllPriceSec - myAllPriceSec;
+        percentDifference = (priceDifference / canAllPriceSec) * 100;
+
+        isGrowthUp = percentDifference >= 0;
+      }
+
       secName = secPrice.tickerSymbol!;
       timeUpdate = secPrice.time!;
-      if (secPrice.currentPrice != null) {
-        price = sprintf('%.2f', [secPrice.currentPrice]);
-      }
+
+      price = sprintf('%.1f р', [currentPriceSec]);
+      currentPriceMy = sprintf('%.1f р', [myAllPriceSec]);
+      priceIfBy = sprintf('%.1f р', [canAllPriceSec]);
+
+      priceDifferenceString = sprintf('%.1f р', [priceDifference]);
+      percentDifferenceString = sprintf('%.1f %', [percentDifference]);
     }
+
+    var color = isGrowthUp ? Colors.green: Colors.deepOrange ;
 
     return GestureDetector(
         onTap: () => {
-          if(secPrice != null){
-            _onTapItem(index, secPrice),
-          }
-        },
+              if (secPrice != null)
+                {
+                  _onTapItem(index, secPrice),
+                }
+            },
         child: SizedBox(
           height: 50,
           child: Row(
@@ -86,6 +124,27 @@ class StocksListScreen extends State<MyStocksListPage>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [Text(secName), Text(price)],
+              ),
+              const SizedBox(width: 30),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text(currentPriceMy), Text(priceIfBy)],
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    priceDifferenceString,
+                    style: TextStyle(color: color),
+                  ),
+                  Text(
+                    percentDifferenceString,
+                    style: TextStyle(color: color),
+                  )
+                ],
               ),
               const Spacer(),
               Text(timeUpdate),
@@ -116,7 +175,9 @@ class StocksListScreen extends State<MyStocksListPage>
 
 class MyStocksListPage extends StatefulWidget {
   final Services services;
-  const MyStocksListPage({super.key, required this.title , required this.services});
+
+  const MyStocksListPage(
+      {super.key, required this.title, required this.services});
 
   final String title;
 

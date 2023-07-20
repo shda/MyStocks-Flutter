@@ -84,6 +84,27 @@ class PurchasedSecuritiesList {
   final String tickerSymbol;
   late List<PurchasedSecurityItem> _listByItems;
 
+  int getCountAllSecurities(){
+
+    int count = 0;
+
+    for (var element in _listByItems) {
+      count += element.countStock;
+    }
+
+    return count;
+  }
+
+  double getAllPrice(){
+    double count = 0;
+
+    for (var element in _listByItems) {
+      count += element.countStock * element.buyPriceByOne;
+    }
+
+    return count;
+  }
+
   PurchasedSecurityItem createItem() {
     var item = PurchasedSecurityItem(tickerSymbol);
     _listByItems.add(item);
