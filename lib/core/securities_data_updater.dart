@@ -29,6 +29,17 @@ class SecuritiesDataUpdater {
     return sen[index];
   }
 
+  SecuritiesPriceInfo? getPriceByName(String secName){
+
+    for (var value in _securitiesPriceDict.values) {
+      if(value.tickerSymbol == secName) {
+        return value;
+      }
+    }
+
+    return _securitiesPriceDict[secName];
+  }
+
   void setPriceListener(ISecuritiesUpdate securitiesUpdate) {
     _securitiesUpdate = securitiesUpdate;
   }
@@ -42,6 +53,7 @@ class SecuritiesDataUpdater {
   }
 
   void setSecuritiesNames(Iterable<String> secUid) {
+    _securitiesUpdateNames.clear();
     for (var id in secUid) {
       _securitiesUpdateNames.add(id);
     }

@@ -3,6 +3,7 @@ import 'package:mystocks/debug/debug_dummy_intermediary.dart';
 import 'package:mystocks/moex/moex_intermediary_impl.dart';
 import 'core/purchased_securities_collection.dart';
 import 'core/services.dart';
+import 'core/user_securities.dart';
 import 'data/interface_intermediary.dart';
 import 'screens/my_stocks_list_screen.dart';
 
@@ -13,16 +14,22 @@ void main() async{
 Future<Services>  _createServices() async{
   var purchasedSecuritiesCollection = PurchasedSecuritiesCollection();
   await purchasedSecuritiesCollection.load();
-  var intermediary = _createIntermediary();
 
-  var services = Services(purchasedSecuritiesCollection , intermediary);
+  var userSecurities = UserSecurities();
+  await userSecurities.load();
+
+  var services = Services(
+    intermediary: _createIntermediary(),
+    userSecurities: userSecurities,
+    purchasedSecuritiesCollection: purchasedSecuritiesCollection,
+  );
 
   return services;
 }
 
 IIntermediary _createIntermediary(){
   return MoexIntermediaryImpl();
-  return DummyIntermediary();
+  //return DummyIntermediary();
 }
 
 class MyApp extends StatelessWidget {

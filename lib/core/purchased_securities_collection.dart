@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:mystocks/core/interface_purchased.dart';
+import 'package:mystocks/core/interfaces/interface_purchased.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
@@ -77,6 +77,20 @@ class PurchasedSecuritiesCollection extends IPurchasedSecuritiesCollection {
     }
 
     return list!;
+  }
+
+  double getAllPurchasedSecuritiesPrice(){
+    double allPrice = 0;
+    for (var element in mapItems.values) {
+      allPrice += element.getAllPrice();
+    }
+
+    return allPrice;
+  }
+
+  @override
+  Iterable<PurchasedSecuritiesList> getAllSecurities() {
+    return mapItems.values;
   }
 }
 

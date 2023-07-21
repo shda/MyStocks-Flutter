@@ -67,7 +67,7 @@ class _StockInfoScreen extends State<StockInfoScreen> {
     PurchasedSecurityItem item = listPrices[index];
 
     return Dismissible(
-        key: ObjectKey(index),
+        key: UniqueKey(),
         background: Container(
           color: Colors.green,
         ),

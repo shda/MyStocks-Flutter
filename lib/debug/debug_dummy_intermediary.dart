@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:mystocks/data/interface_intermediary.dart';
+import 'package:mystocks/data/securities_info.dart';
 import 'package:mystocks/data/securities_price_info.dart';
 
 class DummyIntermediary extends IIntermediary {
@@ -17,4 +18,12 @@ class DummyIntermediary extends IIntermediary {
 
     return map;
   }
+
+  @override
+  Future<Map<String, SecuritiesInfo>> requestAllSecuritiesInfo() {
+    // TODO: implement requestAllSecuritiesInfo
+    throw UnimplementedError();
+  }
+
+
 }

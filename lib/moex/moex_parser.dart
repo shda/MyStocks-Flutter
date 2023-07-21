@@ -1,9 +1,40 @@
 import 'dart:convert';
 import 'package:mystocks/moex/marketdata_columns_enum.dart';
+import 'package:mystocks/moex/moex_securities_info.dart';
 import 'package:mystocks/moex/moex_security_metadata_info.dart';
 import 'dart:developer' as developer;
 
 class MoexParser {
+
+  static Map<String, MoexSecuritiesInfo> parsingAllSecuritiesDict(
+      String jsonData) {
+    var mapJson = jsonDecode(jsonData);
+    var table = mapJson["securities"]["data"];
+
+    Map<String, MoexSecuritiesInfo> map =
+      <String, MoexSecuritiesInfo>{};
+
+    try {
+      List<dynamic> list = table;
+
+      for (int i = 0; i < list.length; i++) {
+        List<dynamic> items = list[i];
+
+        var info = MoexSecuritiesInfo(
+          secId: items[SecuritiesFieldEnum.SECID.index],
+          secName: items[SecuritiesFieldEnum.SECNAME.index],
+          shortName: items[SecuritiesFieldEnum.SHORTNAME.index],
+        );
+
+        map[info.secId as String] = info;
+      }
+    } catch (e) {
+      developer.log(e.toString());
+    }
+
+    return map;
+  }
+
   static Map<String, MoexSecurityMetadataInfo> parsingMarketDict(
       String jsonData) {
     var mapJson = jsonDecode(jsonData);
