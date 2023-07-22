@@ -114,8 +114,8 @@ class StocksListScreen extends State<MyStocksListPage>
       ),
       onDismissed: (DismissDirection direction) {
         widget.services.userSecurities.removeItem(secName);
-        _securitiesDataUpdater.setSecuritiesNames(
-            widget.services.userSecurities.userSecurities);
+        _securitiesDataUpdater
+            .setSecuritiesNames(widget.services.userSecurities.userSecurities);
         widget.services.userSecurities.save();
         onUpdateSecuritiesPrice();
       },
@@ -169,9 +169,10 @@ class StocksListScreen extends State<MyStocksListPage>
   }
 
   Widget _buildHeader(BuildContext context) {
-
     String sumPriceAllMySecString = "---";
     String sumPriceInNowBuyString = "---";
+    String diffBayedAndCurrentPriceString = "---";
+    String diffBayedAndCurrentPricePercentStr = "---";
 
     var psCollection = widget.services.purchasedSecuritiesCollection;
     var price = psCollection.getAllPurchasedSecuritiesPrice();
@@ -180,15 +181,26 @@ class StocksListScreen extends State<MyStocksListPage>
 
     double priceNowBuy = 0;
     for (var element in listSec) {
-       var count = element.getCountAllSecurities();
-       var securities = _securitiesDataUpdater.getPriceByName(element.tickerSymbol);
-       if(securities != null){
-         priceNowBuy += securities.currentPrice! * count;
-       }
+      var count = element.getCountAllSecurities();
+      var securities =
+          _securitiesDataUpdater.getPriceByName(element.tickerSymbol);
+      if (securities != null) {
+        priceNowBuy += securities.currentPrice! * count;
+      }
     }
 
     sumPriceAllMySecString = sprintf('%.1f р', [price]);
     sumPriceInNowBuyString = sprintf('%.1f р', [priceNowBuy]);
+
+    double diffBayedAndCurrentPricePrice = (priceNowBuy - price);
+    diffBayedAndCurrentPriceString =
+        sprintf('%.1f р', [diffBayedAndCurrentPricePrice]);
+
+    diffBayedAndCurrentPricePercentStr = sprintf(
+        '%.1f %', [(diffBayedAndCurrentPricePrice / priceNowBuy) * 100]);
+
+    var color =
+        diffBayedAndCurrentPricePrice > 0 ? Colors.green : Colors.deepOrange;
 
     return SizedBox(
         height: 60,
@@ -198,6 +210,16 @@ class StocksListScreen extends State<MyStocksListPage>
             Text(sumPriceAllMySecString),
             const SizedBox(width: 30),
             Text(sumPriceInNowBuyString),
+            const SizedBox(width: 30),
+            Text(
+              diffBayedAndCurrentPriceString,
+              style: TextStyle(color: color),
+            ),
+            const SizedBox(width: 30),
+            Text(
+              diffBayedAndCurrentPricePercentStr,
+              style: TextStyle(color: color),
+            ),
           ],
         ));
   }
