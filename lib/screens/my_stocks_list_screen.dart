@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:mystocks/core/securities_data_updater.dart';
 import 'package:mystocks/core/services.dart';
 import 'package:mystocks/data/securities_price_info.dart';
+import 'package:mystocks/libs/text_utils.dart';
 import 'package:mystocks/screens/add_user_securities.dart';
 import 'package:mystocks/screens/stock_info_screen.dart';
 import 'package:sprintf/sprintf.dart';
@@ -97,11 +98,12 @@ class StocksListScreen extends State<MyStocksListPage>
       secName = secPrice.tickerSymbol!;
       timeUpdate = secPrice.time!;
 
-      price = sprintf('%.1f р', [currentPriceSec]);
-      currentPriceMy = sprintf('%.1f р', [myAllPriceSec]);
-      priceIfBy = sprintf('%.1f р', [canAllPriceSec]);
+      price = "${TextUtils.insertSpacesInThousands(currentPriceSec)} p";
+      currentPriceMy = "${TextUtils.insertSpacesInThousands(myAllPriceSec)} p";
 
-      priceDifferenceString = sprintf('%.1f р', [priceDifference]);
+      priceIfBy = "${TextUtils.insertSpacesInThousands(canAllPriceSec)} p";
+      priceDifferenceString =
+          "${TextUtils.insertSpacesInThousands(priceDifference)} p";
       percentDifferenceString = sprintf('%.1f %', [percentDifference]);
     }
 
@@ -131,19 +133,27 @@ class StocksListScreen extends State<MyStocksListPage>
             child: Row(
               children: [
                 const SizedBox(width: 10),
-                const CircleAvatar(child: Text('Text')),
+                CircleAvatar(
+                    child: Text(
+                  secName,
+                  style: const TextStyle(fontSize: 10),
+                )),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text(secName), Text(price)],
+                SizedBox(
+                  width: 60,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [Text(secName), Text(price)],
+                  ),
                 ),
-                const SizedBox(width: 30),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text(currentPriceMy), Text(priceIfBy)],
-                ),
+                SizedBox(
+                    width: 100,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text(currentPriceMy), Text(priceIfBy)],
+                    )),
                 const Spacer(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -169,57 +179,62 @@ class StocksListScreen extends State<MyStocksListPage>
   }
 
   Widget _buildHeader(BuildContext context) {
-    String sumPriceAllMySecString = "---";
-    String sumPriceInNowBuyString = "---";
-    String diffBayedAndCurrentPriceString = "---";
+    String sumPriceAllMySecStr = "---";
+    String sumPriceAllSecToStockExchangeStr = "---";
+    String diffBayedAndCurrentPriceSecStr = "---";
     String diffBayedAndCurrentPricePercentStr = "---";
 
     var psCollection = widget.services.purchasedSecuritiesCollection;
-    var price = psCollection.getAllPurchasedSecuritiesPrice();
+    var sumPriceAllMySec = psCollection.getAllPurchasedSecuritiesPrice();
 
-    var listSec = psCollection.getAllSecurities();
+    var listAllMySec = psCollection.getAllSecurities();
 
-    double priceNowBuy = 0;
-    for (var element in listSec) {
-      var count = element.getCountAllSecurities();
-      var securities =
-          _securitiesDataUpdater.getPriceByName(element.tickerSymbol);
+    double sumPriceAllSecToStockExchange = 0;
+    for (var sec in listAllMySec) {
+      var count = sec.getCountAllSecurities();
+      var securities = _securitiesDataUpdater.getPriceByName(sec.tickerSymbol);
       if (securities != null) {
-        priceNowBuy += securities.currentPrice! * count;
+        sumPriceAllSecToStockExchange += securities.currentPrice! * count;
       }
     }
 
-    sumPriceAllMySecString = sprintf('%.1f р', [price]);
-    sumPriceInNowBuyString = sprintf('%.1f р', [priceNowBuy]);
+    sumPriceAllMySecStr =
+        "${TextUtils.insertSpacesInThousands(sumPriceAllMySec)} p";
+    sumPriceAllSecToStockExchangeStr =
+        "${TextUtils.insertSpacesInThousands(sumPriceAllSecToStockExchange)} p";
 
-    double diffBayedAndCurrentPricePrice = (priceNowBuy - price);
-    diffBayedAndCurrentPriceString =
-        sprintf('%.1f р', [diffBayedAndCurrentPricePrice]);
+    double diffBayedAndCurrentPriceSec =
+        (sumPriceAllSecToStockExchange - sumPriceAllMySec);
+    diffBayedAndCurrentPriceSecStr =
+        "${TextUtils.insertSpacesInThousands(diffBayedAndCurrentPriceSec)} p";
 
-    diffBayedAndCurrentPricePercentStr = sprintf(
-        '%.1f %', [(diffBayedAndCurrentPricePrice / priceNowBuy) * 100]);
+    diffBayedAndCurrentPricePercentStr = sprintf('%.1f %',
+        [(diffBayedAndCurrentPriceSec / sumPriceAllSecToStockExchange) * 100]);
 
     var color =
-        diffBayedAndCurrentPricePrice > 0 ? Colors.green : Colors.deepOrange;
+        diffBayedAndCurrentPriceSec > 0 ? Colors.green : Colors.deepOrange;
 
     return SizedBox(
         height: 60,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(width: 30),
-            Text(sumPriceAllMySecString),
-            const SizedBox(width: 30),
-            Text(sumPriceInNowBuyString),
-            const SizedBox(width: 30),
-            Text(
-              diffBayedAndCurrentPriceString,
+            Expanded(child: Text(sumPriceAllMySecStr)),
+            //const SizedBox(width: 30),
+            Expanded(child: Text(sumPriceAllSecToStockExchangeStr)),
+            // const SizedBox(width: 30),
+            Expanded(
+                child: Text(
+              diffBayedAndCurrentPriceSecStr,
               style: TextStyle(color: color),
-            ),
-            const SizedBox(width: 30),
-            Text(
+            )),
+            // const SizedBox(width: 30),
+            Expanded(
+                child: Text(
               diffBayedAndCurrentPricePercentStr,
               style: TextStyle(color: color),
-            ),
+            )),
           ],
         ));
   }
