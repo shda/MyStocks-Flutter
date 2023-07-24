@@ -1,4 +1,6 @@
-abstract class IUserSecurities{
+import 'package:mystocks/core/services.dart';
+
+abstract class IUserSecurities extends IService{
 
   Iterable<String> get userSecurities;
 

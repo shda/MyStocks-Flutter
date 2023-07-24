@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mystocks/core/interfaces/interface_user_securities.dart';
 import 'package:mystocks/core/services.dart';
+import 'package:mystocks/data/interface_intermediary.dart';
 import 'package:mystocks/data/securities_info.dart';
 
 class _AddUserSecurities extends State<AddUserSecuritiesScene> {
@@ -14,7 +15,8 @@ class _AddUserSecurities extends State<AddUserSecuritiesScene> {
   }
 
   Future _requestData() async{
-    _mapSecuritiesInfo = await widget.services.intermediary.requestAllSecuritiesInfo();
+    var intermediary = widget.services.getService<IIntermediary>();
+    _mapSecuritiesInfo = await intermediary.requestAllSecuritiesInfo();
     setState(() {
 
     });
@@ -24,7 +26,8 @@ class _AddUserSecurities extends State<AddUserSecuritiesScene> {
     SecuritiesInfo info = list[index];
     return GestureDetector(
         onTap: () {
-          widget.services.userSecurities.addItem(info.tickerSymbol!);
+          var userSecurities = widget.services.getService<IUserSecurities>();
+          userSecurities.addItem(info.tickerSymbol!);
           Navigator.of(context).pop();
         },
         child: SizedBox(
@@ -67,7 +70,7 @@ class _AddUserSecurities extends State<AddUserSecuritiesScene> {
 }
 
 class AddUserSecuritiesScene extends StatefulWidget {
-  final Services services;
+  final IServicesCollection services;
 
   const AddUserSecuritiesScene(
       {super.key, required this.title, required this.services});

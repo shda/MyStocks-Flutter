@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mystocks/core/interfaces/interface_purchased.dart';
+import 'package:mystocks/core/interfaces/interface_user_securities.dart';
 import 'dart:async';
 import 'package:mystocks/core/securities_data_updater.dart';
 import 'package:mystocks/core/services.dart';
+import 'package:mystocks/data/interface_intermediary.dart';
 import 'package:mystocks/data/securities_price_info.dart';
 import 'package:mystocks/libs/text_utils.dart';
 import 'package:mystocks/screens/add_user_securities.dart';
@@ -16,15 +19,17 @@ class StocksListScreen extends State<MyStocksListPage>
   @override
   void initState() {
     super.initState();
+    var intermediary = widget.services.getService<IIntermediary>();
     _securitiesDataUpdater =
-        SecuritiesDataUpdater(widget.services.intermediary);
+        SecuritiesDataUpdater(intermediary);
     _securitiesDataUpdater.setPriceListener(this);
     startTimer();
   }
 
   void startTimer() async {
+    var userSecurities = widget.services.getService<IUserSecurities>();
     _securitiesDataUpdater
-        .setSecuritiesNames(widget.services.userSecurities.userSecurities);
+        .setSecuritiesNames(userSecurities.userSecurities);
     _securitiesDataUpdater.requestSecurities();
     const oneSec = Duration(seconds: 3);
     _timer = Timer.periodic(oneSec, (timer) {
@@ -81,8 +86,9 @@ class StocksListScreen extends State<MyStocksListPage>
       double priceDifference = 0;
       double percentDifference = 0;
 
-      var listCollection = widget.services.purchasedSecuritiesCollection;
-      var listSec = listCollection.getListSecurities(secPrice.tickerSymbol);
+      var psCollection = widget.services.getService<IPurchasedSecuritiesCollection>();
+      //var listCollection = widget.services.purchasedSecuritiesCollection;
+      var listSec = psCollection.getListSecurities(secPrice.tickerSymbol);
 
       if (listSec != null) {
         countAllBuyingSec = listSec.getCountAllSecurities();
@@ -114,11 +120,12 @@ class StocksListScreen extends State<MyStocksListPage>
       background: Container(
         color: Colors.green,
       ),
-      onDismissed: (DismissDirection direction) {
-        widget.services.userSecurities.removeItem(secName);
+      onDismissed: (DismissDirection direction) async{
+        var userSecurities = widget.services.getService<IUserSecurities>();
+        userSecurities.removeItem(secName);
         _securitiesDataUpdater
-            .setSecuritiesNames(widget.services.userSecurities.userSecurities);
-        widget.services.userSecurities.save();
+            .setSecuritiesNames(userSecurities.userSecurities);
+        await userSecurities.save();
         onUpdateSecuritiesPrice();
       },
       child: GestureDetector(
@@ -184,7 +191,8 @@ class StocksListScreen extends State<MyStocksListPage>
     String diffBayedAndCurrentPriceSecStr = "---";
     String diffBayedAndCurrentPricePercentStr = "---";
 
-    var psCollection = widget.services.purchasedSecuritiesCollection;
+    var psCollection = widget.services.getService<IPurchasedSecuritiesCollection>();
+    //var psCollection = widget.services.purchasedSecuritiesCollection;
     var sumPriceAllMySec = psCollection.getAllPurchasedSecuritiesPrice();
 
     var listAllMySec = psCollection.getAllSecurities();
@@ -236,10 +244,14 @@ class StocksListScreen extends State<MyStocksListPage>
     );
      */
 
-    return  Row(
+    return Row(
       children: [
         const SizedBox(height: 100),
-        Expanded(child:  Text(sumPriceAllMySecStr, textAlign: TextAlign.center ,)),
+        Expanded(
+            child: Text(
+          sumPriceAllMySecStr,
+          textAlign: TextAlign.center,
+        )),
         Expanded(
             child: Text(sumPriceAllSecToStockExchangeStr,
                 textAlign: TextAlign.center)),
@@ -271,10 +283,11 @@ class StocksListScreen extends State<MyStocksListPage>
                   AddUserSecuritiesScene(title: "", services: widget.services),
             ),
           )
-              .then((value) {
-            var listSen = widget.services.userSecurities;
-            _securitiesDataUpdater.setSecuritiesNames(listSen.userSecurities);
-            listSen.save();
+              .then((value) async {
+            var us = widget.services.getService<IUserSecurities>();
+           // var listSen = widget.services.userSecurities;
+            _securitiesDataUpdater.setSecuritiesNames(us.userSecurities);
+            await us.save();
             setState(
               () {},
             );
@@ -286,7 +299,6 @@ class StocksListScreen extends State<MyStocksListPage>
         // title: const Text("My Stock"),
         title: _buildHeader(context),
         //flexibleSpace: _buildHeader(context),
-
       ),
       body: Column(
         children: [
@@ -308,7 +320,7 @@ class StocksListScreen extends State<MyStocksListPage>
 }
 
 class MyStocksListPage extends StatefulWidget {
-  final Services services;
+  final IServicesCollection services;
 
   const MyStocksListPage(
       {super.key, required this.title, required this.services});

@@ -17,7 +17,7 @@ void main() async{
 }
 
 const double windowWidth = 600;
-const double windowHeight = 800;
+const double windowHeight = 300;
 
 void setupWindow() {
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
@@ -35,20 +35,21 @@ void setupWindow() {
   }
 }
 
-Future<Services>  _createServices() async{
+Future<IServicesCollection> _createServices() async{
+
+  IServicesCollection sc = ServicesCollection();
+
   var psCollection = PurchasedSecuritiesCollection();
   await psCollection.load();
+  sc.addService(psCollection);
 
   var userSecurities = UserSecurities();
   await userSecurities.load();
+  sc.addService(userSecurities);
 
-  var services = Services(
-    intermediary: _createIntermediary(),
-    userSecurities: userSecurities,
-    purchasedSecuritiesCollection: psCollection,
-  );
+  sc.addService(_createIntermediary());
 
-  return services;
+  return sc;
 }
 
 IIntermediary _createIntermediary(){
@@ -57,7 +58,7 @@ IIntermediary _createIntermediary(){
 }
 
 class MyApp extends StatelessWidget {
-  final Services _services;
+  final IServicesCollection _services;
   const MyApp(this._services, {super.key});
 
   @override

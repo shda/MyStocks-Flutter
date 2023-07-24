@@ -1,14 +1,31 @@
-import 'package:mystocks/core/interfaces/interface_purchased.dart';
-import 'package:mystocks/data/interface_intermediary.dart';
-import 'interfaces/interface_user_securities.dart';
+class ServicesCollection extends IServicesCollection{
 
-class Services {
-  final IPurchasedSecuritiesCollection purchasedSecuritiesCollection;
-  final IIntermediary intermediary;
-  final IUserSecurities userSecurities;
+  final Map<Type , IService> _mapServices = {};
 
-  Services(
-      {required this.purchasedSecuritiesCollection,
-      required this.intermediary,
-      required this.userSecurities});
+  @override
+  void addService(IService service) {
+    _mapServices[service.runtimeType] = service;
+  }
+
+  @override
+  T getService<T>() {
+    var type = T.runtimeType;
+
+    for(var v in _mapServices.values){
+      if(v is T){
+        return v as T;
+      }
+    }
+
+    return _mapServices[type] as T;
+  }
+}
+
+abstract class IServicesCollection{
+  void addService(IService service);
+  T getService<T>();
+}
+
+abstract class IService{
+
 }

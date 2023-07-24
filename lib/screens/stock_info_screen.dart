@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mystocks/core/interfaces/interface_purchased.dart';
 import 'package:mystocks/core/purchased_securities_collection.dart';
 import 'package:mystocks/core/services.dart';
 import 'package:mystocks/data/securities_price_info.dart';
@@ -6,7 +7,7 @@ import 'package:mystocks/screens/edit_buying_stocks_screen.dart';
 import 'package:sprintf/sprintf.dart';
 
 class StockInfoScreen extends StatefulWidget {
-  final Services services;
+  final IServicesCollection services;
   final SecuritiesPriceInfo secPrice;
 
   const StockInfoScreen(
@@ -58,7 +59,8 @@ class _StockInfoScreen extends State<StockInfoScreen> {
   }
 
   void _savePurchasedSecuritiesCollection(){
-    widget.services.purchasedSecuritiesCollection.save();
+    var psCollection = widget.services.getService<IPurchasedSecuritiesCollection>();
+    psCollection.save();
   }
 
   Widget _buildStockItem(
@@ -104,7 +106,8 @@ class _StockInfoScreen extends State<StockInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var psCollection = widget.services.purchasedSecuritiesCollection;
+    var psCollection = widget.services.getService<IPurchasedSecuritiesCollection>();
+   // var psCollection = widget.services.purchasedSecuritiesCollection;
     var list = psCollection.getListSecurities(widget.secPrice.tickerSymbol);
 
     return Scaffold(
