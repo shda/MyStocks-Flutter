@@ -214,29 +214,49 @@ class StocksListScreen extends State<MyStocksListPage>
     var color =
         diffBayedAndCurrentPriceSec > 0 ? Colors.green : Colors.deepOrange;
 
-    return SizedBox(
-        height: 60,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(width: 30),
-            Expanded(child: Text(sumPriceAllMySecStr)),
-            //const SizedBox(width: 30),
-            Expanded(child: Text(sumPriceAllSecToStockExchangeStr)),
-            // const SizedBox(width: 30),
-            Expanded(
-                child: Text(
-              diffBayedAndCurrentPriceSecStr,
-              style: TextStyle(color: color),
-            )),
-            // const SizedBox(width: 30),
-            Expanded(
-                child: Text(
-              diffBayedAndCurrentPricePercentStr,
-              style: TextStyle(color: color),
-            )),
-          ],
-        ));
+    /*
+    return Container(
+      color: Colors.green,
+    );
+     */
+
+    /*
+    return Row(
+      children: [
+        Expanded(child: Container(
+          color: Colors.green,
+        )),
+        Expanded(child: Container(
+          color: Colors.red,
+        )),
+        Expanded(child: Container(
+          color: Colors.white,
+        )),
+      ],
+    );
+     */
+
+    return  Row(
+      children: [
+        const SizedBox(height: 100),
+        Expanded(child:  Text(sumPriceAllMySecStr, textAlign: TextAlign.center ,)),
+        Expanded(
+            child: Text(sumPriceAllSecToStockExchangeStr,
+                textAlign: TextAlign.center)),
+        Expanded(
+            child: Text(
+          diffBayedAndCurrentPriceSecStr,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: color),
+        )),
+        Expanded(
+            child: Text(
+          diffBayedAndCurrentPricePercentStr,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: color),
+        )),
+      ],
+    );
   }
 
   @override
@@ -262,9 +282,14 @@ class StocksListScreen extends State<MyStocksListPage>
         },
         child: const Icon(Icons.add),
       ),
+      appBar: AppBar(
+        // title: const Text("My Stock"),
+        title: _buildHeader(context),
+        //flexibleSpace: _buildHeader(context),
+
+      ),
       body: Column(
         children: [
-          _buildHeader(context),
           Expanded(
             child: ListView.separated(
               // padding: const EdgeInsets.all(8),

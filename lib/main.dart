@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mystocks/debug/debug_dummy_intermediary.dart';
 import 'package:mystocks/moex/moex_intermediary_impl.dart';
@@ -6,14 +9,35 @@ import 'core/services.dart';
 import 'core/user_securities.dart';
 import 'data/interface_intermediary.dart';
 import 'screens/my_stocks_list_screen.dart';
+import 'package:window_size/window_size.dart';
 
 void main() async{
+  setupWindow();
   runApp(MyApp(await _createServices()));
 }
 
+const double windowWidth = 600;
+const double windowHeight = 800;
+
+void setupWindow() {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    WidgetsFlutterBinding.ensureInitialized();
+    setWindowTitle('My Stocks');
+    setWindowMinSize(const Size(windowWidth, windowHeight));
+    //setWindowMaxSize(const Size(windowWidth, windowHeight));
+    getCurrentScreen().then((screen) {
+      setWindowFrame(Rect.fromCenter(
+        center: screen!.frame.center,
+        width: windowWidth,
+        height: windowHeight,
+      ));
+    });
+  }
+}
+
 Future<Services>  _createServices() async{
-  var purchasedSecuritiesCollection = PurchasedSecuritiesCollection();
-  await purchasedSecuritiesCollection.load();
+  var psCollection = PurchasedSecuritiesCollection();
+  await psCollection.load();
 
   var userSecurities = UserSecurities();
   await userSecurities.load();
@@ -21,7 +45,7 @@ Future<Services>  _createServices() async{
   var services = Services(
     intermediary: _createIntermediary(),
     userSecurities: userSecurities,
-    purchasedSecuritiesCollection: purchasedSecuritiesCollection,
+    purchasedSecuritiesCollection: psCollection,
   );
 
   return services;
@@ -39,8 +63,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Test',
-      darkTheme: ThemeData.dark(),
+      title: 'My Stocks',
+      theme: ThemeData.dark(),
+      //darkTheme: ThemeData.dark(),
       home: MyStocksListPage(title: 'My Stocks' , services: _services),
     );
   }
